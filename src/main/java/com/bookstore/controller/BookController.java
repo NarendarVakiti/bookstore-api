@@ -34,9 +34,7 @@ public class BookController {
 	 */
 	@GetMapping("/getbookdetails")
 	public List<BookStore> getBookDetails(){
-		logger.info("Started getBookDetails()"); 
 		List<BookStore> books = bookService.getBookDetails();
-		logger.info("End getBookDetails()"); 
 		return books;
 	}
 	
@@ -46,9 +44,7 @@ public class BookController {
 	 */
 	@GetMapping("/getauthordetails")
 	public List<Author> getAuthorDetails(){
-		logger.info("Started getAuthorDetails()"); 
 		List<Author> authors = bookService.getAuthorDetails();
-		logger.info("End getAuthorDetails()");
 		return authors;
 	}
 	
@@ -59,9 +55,7 @@ public class BookController {
 	 */
 	@PostMapping("/addbookdetails")
 	public String addBookDetails(@RequestBody BookDetails bookDetails) {
-		logger.info("Started addBookDetails()"); 
 		String message = bookService.saveBookDetails(bookDetails);
-		logger.info("End addBookDetails()"); 
 		return message;
 	}
 	
