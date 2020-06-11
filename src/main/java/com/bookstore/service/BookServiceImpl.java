@@ -1,30 +1,34 @@
 package com.bookstore.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.bookstore.exceptionhandling.BookNotExisted;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bookstore.bean.Author;
-import com.bookstore.bean.BookDetails;
-import com.bookstore.bean.BookStore;
+import com.bookstore.bean.BookRequest;
+import com.bookstore.bean.Book;
 import com.bookstore.bean.Status;
-import com.bookstore.dao.AuthorDao;
-import com.bookstore.dao.BookStoreDao;
+import com.bookstore.dao.AuthorRepository;
+import com.bookstore.dao.BookRepository;
 import com.google.gson.Gson;
 
 @Service
 public class BookServiceImpl implements BookService{
 	
 	@Autowired
-	private BookStoreDao bookStoreDao;
+	private BookRepository bookRepository;
 	
 	@Autowired
-	private AuthorDao authorDao;
-	
+	private AuthorRepository authorRepository;
+
 	private static final Logger logger = LoggerFactory.getLogger(BookServiceImpl.class);
 	
 	
@@ -33,33 +37,18 @@ public class BookServiceImpl implements BookService{
 	 * @return books 
 	 */
 	@Override
-	public List<BookStore> getBookDetails() {
+	public List<Book> getBookDetails() {
 		
-		List<BookStore> listOfBooks = null;
+		List<Book> listOfBooks = new ArrayList<>();
 		try {
-			listOfBooks = bookStoreDao.findAll();
+			listOfBooks = bookRepository.findAll();
+			listOfBooks = listOfBooks.stream().sorted().collect(Collectors.toList());
 			logger.info("Book Details Response :: "+listOfBooks);
 			
 		} catch (Exception e) {
-			logger.error("Exception While Fetching Book Details :: "+e);
+			logger.error("Exception While Fetching Book Details :: "+e.getMessage());
 		}
 		return listOfBooks;
-	}
-
-	/**
-	 * To get all book authors details
-	 * @return authors
-	 */
-	@Override
-	public List<Author> getAuthorDetails() {
-		List<Author> author = null;
-		try {
-			author = authorDao.findAll();
-			logger.info("Author Details Response :: "+author);
-		} catch (Exception e) {
-			logger.error("Exception While Fetching Author Details :: "+e);
-		}
-		return author;
 	}
 
 	/**
@@ -68,26 +57,30 @@ public class BookServiceImpl implements BookService{
 	 * @return message
 	 */
 	@Override
-	public String saveBookDetails(BookDetails book) {
+	public String saveBookDetails(BookRequest book) {
 		String message = null;
 		Status status = new Status("Book details are not saved successfully", false);
 		try {
 			boolean bookFlag = Optional.ofNullable(book).isPresent();
 			if(bookFlag) {
 				logger.info("Book Details save request :: "+book);
-				Author author = new Author();
-				author.setAuthorName(book.getAuthorName());
-				author.setAddress(book.getAddress());
-				Author authorId = authorDao.save(author);
-				
-				BookStore bookStore = new BookStore();
+				Author author = authorRepository.findAuthorByName(book.getAuthorName());
+				Book bookStore = new Book();
 				bookStore.setBookName(book.getBookName());
 				bookStore.setBookPrice(book.getBookPrice());
-				bookStore.setAuthor(authorId);
-				
-				bookStoreDao.save(bookStore);
+				bookStore.setAvailability(book.isAvailability());
+				bookStore.setLevel(book.getLevel());
+				bookStore.setRating(book.getRating());
+				if(author == null){
+					logger.info("Author is not existed with name :: "+book.getAuthorName());
+				}else{
+					bookStore.setAuthor(author);
+				}
+				Book books = bookRepository.save(bookStore);
 				status = new Status("Book details are added successfully", true);
-				
+				if(books == null){
+					status = new Status("Book details are not added successfully, try again", true);
+				}
 			}
 			message = new Gson().toJson(status);
 			
@@ -98,4 +91,57 @@ public class BookServiceImpl implements BookService{
 		return message;
 	}
 
+	@Override
+	public List<Book> findBooksByAuthor(String authorName) {
+		List<Book> books = new ArrayList<>();
+		try{
+			books = bookRepository.findBooksByAuthor(authorName);
+		}catch(Exception e){
+			logger.error("Exception While fetching Books Details by author name :: "+e.getMessage());
+			throw e;
+		}
+		return books;
+	}
+
+	@Override
+	public void deleteBookDetails(Integer bookId){
+		try{
+			bookRepository.deleteById(bookId);
+		}catch(Exception e){
+			logger.info("Exception while deleting book details :: "+e.getMessage());
+			throw e;
+		}
+	}
+
+	@Override
+	public Boolean existsBookById(Integer bookId){
+		return bookRepository.existsById(bookId);
+	}
+
+	@Override
+	public Book updateBookDetails(Book book){
+		Book updatedBook = new Book();
+		try{
+			updatedBook = bookRepository.save(book);
+		}catch (Exception e){
+			logger.info("Exception while updating book details :: "+e.getMessage());
+		}
+		return book;
+	}
+
+	@Override
+	public List<Book> findBooksByRating(String rating){
+		List<Book> books = new ArrayList<>();
+		try{
+			books = bookRepository.findBooksByRating(rating);
+
+			//find availability of books
+			if(!books.isEmpty()){
+				books = books.stream().filter(book -> book.isAvailability()).collect(Collectors.toList());
+			}
+		}catch (Exception e){
+			logger.info("Exception while updating book details :: "+e.getMessage());
+		}
+		return books;
+	}
 }

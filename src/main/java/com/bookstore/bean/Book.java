@@ -14,20 +14,25 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
+
 @Getter @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "bookstore")
-public class BookStore {
+public class Book {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue
 	private int bookId;
 	private String bookName;
 	private double bookPrice;
-	private boolean active;
+	private boolean availability;
+	private String level;
+	private String rating;
+	private LocalDate publishedDate;
 	
 	@ManyToOne
 	@JoinColumn(name = "author_ID")
