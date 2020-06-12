@@ -1,6 +1,12 @@
-This springboot application for implementing rest services
+###### **BookStore-API:**
 
-**BookStore-API URL's**
+This application is about store books details along with author details and address details. It is only for implementing Rest API's
+
+1. Added EurekaClient to this application
+2. Added to Zuul Proxy Server
+3. Used Java 8 Features
+
+**Few of BookStore-API URL's**
 
 * http://localhost:8083/getbookdetails
 * http://localhost:8083/getauthordetails

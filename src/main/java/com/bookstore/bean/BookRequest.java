@@ -15,7 +15,7 @@ public class BookRequest implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -1450252897638356990L;
-	
+
 	private int bookId;
 	private String bookName;
 	private double bookPrice;
@@ -24,5 +24,7 @@ public class BookRequest implements Serializable{
 	private String rating;
 	private LocalDate publishedDate;
 	private String authorName;
+	private String addedBy;
+
 
 }

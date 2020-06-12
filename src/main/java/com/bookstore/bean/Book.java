@@ -38,4 +38,8 @@ public class Book {
 	@JoinColumn(name = "author_ID")
 	private Author author;
 
+	@ManyToOne
+	@JoinColumn(name = "admin_ID")
+	private Admin admin;
+
 }

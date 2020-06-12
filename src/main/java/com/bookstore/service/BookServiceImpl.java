@@ -6,16 +6,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.bookstore.bean.*;
+import com.bookstore.dao.AdminRepository;
 import com.bookstore.exceptionhandling.BookNotExisted;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.bookstore.bean.Author;
-import com.bookstore.bean.BookRequest;
-import com.bookstore.bean.Book;
-import com.bookstore.bean.Status;
 import com.bookstore.dao.AuthorRepository;
 import com.bookstore.dao.BookRepository;
 import com.google.gson.Gson;
@@ -28,6 +26,9 @@ public class BookServiceImpl implements BookService{
 	
 	@Autowired
 	private AuthorRepository authorRepository;
+
+	@Autowired
+	private AdminRepository adminRepository;
 
 	private static final Logger logger = LoggerFactory.getLogger(BookServiceImpl.class);
 	
@@ -75,6 +76,12 @@ public class BookServiceImpl implements BookService{
 					logger.info("Author is not existed with name :: "+book.getAuthorName());
 				}else{
 					bookStore.setAuthor(author);
+				}
+				Admin admin = adminRepository.findAdminByName(book.getAddedBy());
+				if(author == null){
+					logger.info("Admin is not existed with name :: "+book.getAddedBy());
+				}else{
+					bookStore.setAdmin(admin);
 				}
 				Book books = bookRepository.save(bookStore);
 				status = new Status("Book details are added successfully", true);
