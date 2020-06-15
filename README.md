@@ -5,6 +5,7 @@ This application is about store books details along with author details and addr
 1. Added EurekaClient to this application
 2. Added to Zuul Proxy Server
 3. Used Java 8 Features
+4. Added Zipkin and sleuth
 
 **Few of BookStore-API URL's**
 

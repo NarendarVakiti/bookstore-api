@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Data
@@ -16,6 +18,8 @@ import javax.persistence.Table;
 @Table(name = "admin")
 public class Admin {
 
+    @Id
+    @GeneratedValue
     private  int adminId;
     private String name;
     private String email;
