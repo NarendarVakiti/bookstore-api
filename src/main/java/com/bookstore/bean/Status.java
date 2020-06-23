@@ -1,6 +1,9 @@
 package com.bookstore.bean;
 
-public class Status {
+import java.io.Serializable;
+
+public class Status implements Serializable {
+	private static final long serialVersionUID = -1450252897638356990L;
 	
 	private String message;
 	private boolean flag;

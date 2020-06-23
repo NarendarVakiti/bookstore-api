@@ -5,6 +5,7 @@ import com.bookstore.bean.BookRequest;
 import com.bookstore.bean.Book;
 import com.bookstore.dao.BookRepository;
 import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,49 +23,49 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-class BookServiceImplTest {
+public class BookServiceImplTest {
 
     @Mock
     private BookRepository bookRepository;
 
     @InjectMocks
-    private BookServiceImpl bookService;
+    private BookServiceImpl bookServiceImpl;
 
     private MockMvc mockMvc;
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(bookServiceImpl).build();
     }
 
     @Test
-    void getBookDetails() {
+    void testGetBookDetails() {
         List<Book> listOfBooks = new ArrayList<>();
         listOfBooks.add(bookDetails());
         when(bookRepository.findAll()).thenReturn(listOfBooks);
-        List<Book> books = bookService.getBookDetails();
+        List<Book> books = bookServiceImpl.getBookDetails();
         assertEquals(listOfBooks, books);
     }
 
     @Test
-    void saveBookDetails() {
+    void testSaveBookDetails() {
         Book books = bookDetails();
         when(bookRepository.save(books)).thenReturn(books);
-        assertEquals(books, bookService.saveBookDetails(bookRequest()));
+        assertEquals(books, bookServiceImpl.saveBookDetails(bookRequest()));
     }
 
     @Test
-    void findBooksByAuthor() {
+    void testFindBooksByAuthor() {
         List<Book> listOfBooks = new ArrayList<>();
         listOfBooks.add(bookDetails());
         when(bookRepository.findBooksByAuthor("Kathy Sierra")).thenReturn(listOfBooks);
-        assertEquals(listOfBooks, bookService.findBooksByAuthor("Kathy Sierra"));
+        assertEquals(listOfBooks, bookServiceImpl.findBooksByAuthor("Kathy Sierra"));
     }
 
     @Test
-    void deleteBookDetails() {
+    void testDeleteBookDetails() {
         Book books = bookDetails();
         when(bookRepository.existsById(books.getBookId())).thenReturn(true);
         //assertFalse(bookRepository.exists(books.getBookId()));

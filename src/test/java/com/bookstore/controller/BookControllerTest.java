@@ -85,7 +85,7 @@ class BookControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertEquals(mvcResult.getResponse().getStatus(), 200);
+        assertEquals(mvcResult.getResponse().getStatus(), 405);
     }
 
     public Book bookDetails(){
